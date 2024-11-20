@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Andrew Rowe / COMP 272-002
  *
  *   This java file contains the problem solutions for the methods selectionSort,
  *   mergeSortDivisibleByKFirst, asteroidsDestroyed, and numRescueCanoes methods.
@@ -33,15 +33,30 @@ public class ProblemSolutions {
     }
 
     public static void selectionSort(int[] values, boolean ascending ) {
-
         int n = values.length;
-
+        // Outer loop() to iterate through the array[]...
         for (int i = 0; i < n - 1; i++) {
+            // Initialize the targetIndex (minimum or maximum)
+            int targetIndex = i;
+            // Inner loop() to find the smallest/largest element in the unsorted array[]...
+            for (int j = i + 1; j < n ; j++) {
+                if (ascending) {
+                    // Look for the smallest element...
+                    if (values[j] < values[targetIndex]) {
+                        targetIndex = j;
+                    }
+                } else {
+                    // Look for the largest element...
+                    if (values[j] > values[targetIndex]) {
+                        targetIndex = j;
+                    }
+                }
+            }
 
-            // YOU CODE GOES HERE -- COMPLETE THE INNER LOOP OF THIS
-            // "SELECTION SORT" ALGORITHM.
-            // DO NOT FORGET TO ADD YOUR NAME / SECTION ABOVE
-
+            // Swap it with the current index element...
+            int temp = values[targetIndex];
+            values[targetIndex] = values[i];
+            values[i] = temp;
         }
 
     } // End class selectionSort
@@ -92,18 +107,52 @@ public class ProblemSolutions {
 
     private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right)
     {
-        // YOUR CODE GOES HERE, THIS METHOD IS NO MORE THAN THE STANDARD MERGE PORTION
-        // OF A MERGESORT, EXCEPT THE NUMBERS DIVISIBLE BY K MUST GO FIRST WITHIN THE
-        // SEQUENCE PER THE DISCUSSION IN THE PROLOGUE ABOVE.
-        //
-        // NOTE: YOU CAN PROGRAM THIS WITH A SPACE COMPLEXITY OF O(1) OR O(N LOG N).
-        // AGAIN, THIS IS REFERRING TO SPACE COMPLEXITY. O(1) IS IN-PLACE, O(N LOG N)
-        // ALLOCATES AUXILIARY DATA STRUCTURES (TEMPORARY ARRAYS). IT WILL BE EASIER
-        // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
-        // OF THIS PROGRAMMING EXERCISES.
 
-        return;
+        // System.out.println("Merging Range: " + left + " to " + right);
+        // System.out.println("Before Merge: " + Arrays.toString(Arrays.copyOfRange(arr, left, right + 1)));
 
+        // Create temporary arrays[]...
+        int[] temp = new int[right - left + 1];
+        int index = 0;
+
+        // Split numbers into two groups...
+        // Group #1 - Add the numbers divisible by 'k'...
+        for (int i = left; i <= right ; i++) {
+            if (arr[i] % k == 0) {
+                // Numbers divisible by 'k'...
+                temp[index++] = arr[i];
+            }
+        }
+        // System.out.println("Divisible by " + k + ": " + Arrays.toString(Arrays.copyOf(temp, index)));
+        // Mark the end of a divisible group...
+        int divisibleEnd = index;
+
+        // Group #2 - Add the numbers not divisible by 'k'...
+        int[] nonDivisible = new int[right - left + 1 - divisibleEnd];
+        int nonIndex = 0;
+        for (int i = left; i <= right ; i++) {
+            if (arr[i] % k != 0) {
+                // Numbers not divisible by 'k'...
+                nonDivisible[nonIndex++] = arr[i];
+            }
+        }
+
+        // Sort the non-divisible Group #2...
+        Arrays.sort(nonDivisible);
+
+        // Append the sorted non-divisible Group #2 to temp...
+        for (int i = 0; i < nonIndex; i++) {
+            temp[index++] = nonDivisible[i];
+        }
+
+        // System.out.println("Combining before sorting: " + Arrays.toString(Arrays.copyOf(temp, index)));
+
+        // Copy back to the original array[]...
+        for (int i = 0; i < temp.length; i++) {
+            arr[left + i] = temp[i];
+
+        }
+        // System.out.println("After merging: " + Arrays.toString(Arrays.copyOfRange(arr, left, right + 1)));
     }
 
 
@@ -154,10 +203,20 @@ public class ProblemSolutions {
 
     public static boolean asteroidsDestroyed(int mass, int[] asteroids) {
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
+        // Sort the asteroids array[] to prioritize smaller asteroids...
+        Arrays.sort(asteroids);
 
-        return false;
+        // Simulate the destruction of asteroids...
+        for (int asteroid : asteroids) {
+            if (mass >= asteroid) {
+                mass += asteroid;
+            } else {
+                return false;
+            }
+        }
 
+        // If all asteroids are destroyed...
+        return true;
     }
 
 
@@ -192,10 +251,23 @@ public class ProblemSolutions {
 
     public static int numRescueSleds(int[] people, int limit) {
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT
+        // Sort the array[] to efficiently pair the lightest and heaviest people...
+        Arrays.sort(people);
 
-        return -1;
+        int left = 0;
+        int right = people.length - 1;
+        int sleds = 0;
 
+        while (left <= right) {
+            if (people[left] + people[right] <= limit) {
+                // If the lightest and heaviest fit together, pair them...
+                left++;
+            }
+            // Always move the right pointer (heaviest person gets a sled)
+            right--;
+            sleds++; // use one sled...
+        }
+        return sleds;
     }
 
 } // End Class ProblemSolutions
